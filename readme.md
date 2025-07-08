@@ -1,4 +1,5 @@
 # Travaux Pratiques SQL - Fonctions d’IA avec Starburst
+Cluster url : `tps://ai-workshop.enablement.starburstdata.net`
 
 ## TP1 : Découverte des fonctions d’IA SQL
 
