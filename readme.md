@@ -109,7 +109,7 @@ SELECT
     ai.prompt(
         'You are a loan underwriter and provide decisions on loans... summary: ',
         summary,
-        'bedrock_claude35') AS decision,
+        'openai_small') AS decision,
     summary AS loan_application
 FROM loan_application_summary
 LIMIT 10;
