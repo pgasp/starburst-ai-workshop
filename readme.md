@@ -1,5 +1,7 @@
 # Travaux Pratiques SQL - Fonctions d’IA avec Starburst
 Lien vers le cluster de l'atelier: https://ai-workshop.enablement.starburstdata.net 
+### Instructions
+-  Pour tous les TP, sélectionnez le catalogue : `starburst`
 
 ## TP1 : Découverte des fonctions d’IA SQL
 
@@ -9,7 +11,7 @@ Explorer les fonctions d’IA disponibles dans votre environnement SQL Starburst
 
 ### Instructions
 
-- Utilisez un rôle : `all_llm` 
+- Utilisez un rôle : `all_llm`
 
 ### Script SQL
 
@@ -86,7 +88,7 @@ Utiliser un modèle LLM pour évaluer le risque d’un prêt et prendre une déc
 
 ### Instructions
 
-- Modifiez les noms de **catalogue** et **schéma** selon votre environnement
+- Sélectionnez le catalogue : `starburst`
 - Utilisez un rôle  `all_llm`
 ### Script SQL
 
