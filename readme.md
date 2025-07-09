@@ -24,7 +24,7 @@ SELECT * FROM starburst.ai.language_models;
 SELECT * FROM starburst.ai.embedding_models;
 
 -- Génération d’un vecteur d’embedding
-SELECT ai.generate_embedding('Today is a fantastic day', 'openai_small');
+SELECT ai.generate_embedding('Today is a fantastic day', 'nomic-embed-text');
 
 -- Analyse de sentiment
 SELECT
@@ -40,11 +40,11 @@ SELECT
 
 -- Correction grammaticale
 SELECT
-    ai.fix_grammar('That disaster effected so many lives', 'bedrock_claude35') AS incorrect_word,
+    ai.fix_grammar('That disaster effected so many lives', 'mistral') AS incorrect_word,
     ai.fix_grammar('TSMC customers ordered fewer mobile chips...', 'openai_small') AS editorially_correct;
 
 -- Masquage d'information
-SELECT ai.mask('TSMC customers ordered fewer mobile chips... $25.8 billion...',
+SELECT ai.mask('TSMC customers ordered fewer mobile chips 07/07/2024... $25.8 billion...',
                array['financial data', 'dates'],
                'openai_small') AS masked_summary;
 ```
