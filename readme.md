@@ -29,7 +29,7 @@ SELECT * FROM starburst.ai.embedding_models;
   Generate vector embedding example
   Change model name according to configured models
 */
-SELECT ai.generate_embedding('Today is a fantastic day', 'bedrock_titan');
+SELECT ai.generate_embedding('Today is a fantastic day', 'nomic-embed-text');
 
 /*
   Sample of AI SQL functions
