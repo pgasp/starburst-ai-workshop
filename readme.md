@@ -16,39 +16,55 @@ Explorer les fonctions d’IA disponibles dans votre environnement SQL Starburst
 ### Script SQL
 
 ```sql
--- Liste des fonctions d’IA disponibles
+--List of all AI functions
 SHOW FUNCTIONS FROM starburst.ai;
 
--- Liste des modèles de langage configurés
+--List of all configured models
 SELECT * FROM starburst.ai.language_models;
 
--- Liste des modèles d'embedding configurés
+--List of all embedding_models
 SELECT * FROM starburst.ai.embedding_models;
 
--- Génération d’un vecteur d’embedding
-SELECT ai.generate_embedding('Today is a fantastic day', 'nomic-embed-text');
+/*
+  Generate vector embedding example
+  Change model name according to configured models
+*/
+SELECT ai.generate_embedding('Today is a fantastic day', 'bedrock_titan');
 
--- Analyse de sentiment
+/*
+  Sample of AI SQL functions
+  ****Delete the following prior to demo: 
+           Make sure to test output before demo
+           Cloud models may be changing and output is non-deterministic
+           As such, the output may be a little unpredictable
+  ****Delete the section above prior to demo
+*/
+SELECT 
+    ai.analyze_sentiment('Today is a fantastic day', 'openai_small') as user_quote,
+    ai.analyze_sentiment('TSMC customers ordered fewer mobile chips in the first quarter 
+                      than a year earlier, but the companys revenue nevertheless managed to top expectations. ',
+                      'openai_small') as tech_report_summary;
+
 SELECT
-    ai.analyze_sentiment('Today is a fantastic day', 'openai_small') AS user_quote,
-    ai.analyze_sentiment('TSMC customers ordered fewer mobile chips...', 'openai_small') AS tech_report_summary;
+    ai.classify('TSMC customers ordered fewer mobile chips in the first quarter 
+             than a year earlier, but the company’s revenue nevertheless managed to top expectations.', 
+             array['life sciences', 'banking', 'tech', 'energy'], 
+             'openai_small') as report_classification;
 
--- Classification de texte
 SELECT
-    ai.classify('TSMC customers ordered fewer mobile chips...',
-                array['life sciences', 'banking', 'tech', 'energy'],
-                'openai_small') AS report_classification;
+    ai.fix_grammar('That disaster effected so many lives', 'bedrock_claude35') as incorrect_word,
+    ai.fix_grammar('TSMC customers ordered fewer mobile chips in the first quarter 
+                than a year earlier, but the company’s revenue nevertheless managed to top expectations.',
+                'openai_small') as editorially_correct;
 
-
--- Correction grammaticale
-SELECT
-    ai.fix_grammar('That disaster effected so many lives', 'mistral') AS incorrect_word,
-    ai.fix_grammar('TSMC customers ordered fewer mobile chips...', 'openai_small') AS editorially_correct;
-
--- Masquage d'information
-SELECT ai.mask('TSMC customers ordered fewer mobile chips 07/07/2024... $25.8 billion...',
-               array['financial data', 'dates'],
-               'openai_small') AS masked_summary;
+SELECT ai.mask('TSMC customers ordered fewer mobile chips in the first quarter 
+            than a year earlier, but the companys revenue nevertheless managed to top expectations.
+            
+            TSMC today posted sales of 839.25 billion New Taiwanese dollars, or $25.8 billion, for the 
+            three months ended March 31. Thats up 41.6% from the same time a year earlier. Analysts had 
+            expected slightly slower growth.',
+            array['financial data', 'dates'],
+            'openai_small') as masked_summary;
 ```
 ---
 
