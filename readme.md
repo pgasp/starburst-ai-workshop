@@ -93,26 +93,29 @@ Utiliser un modèle LLM pour évaluer le risque d’un prêt et prendre une déc
 ### Script SQL
 
 ```sql
--- Affichage des données de prêt
+--Sample of loan application data
 SELECT * FROM iceberg.workshop.loan_approval;
 
--- Analyse de risque et prise de décision
+--Loan application analysis using LLM
 WITH loan_application_summary AS (
     SELECT
-        text AS loan_reason,
-        concat('income: ', income, ', credit_score: ', credit_score, ', dti_ratio: ', dti_ratio, ', loan request: ', text) AS summary
+            text AS loan_reason,
+            concat('income: ', income, ', credit_score: ', credit_score, ', dti_ratio: ', dti_ratio, ', loan request: ', text) as summary
     FROM iceberg.workshop.loan_approval
 )
 SELECT
     loan_reason,
-    ai.classify(summary, array['high risk loan', 'moderate risk loan', 'low risk loan'], 'openai_small') AS loan_risk,
+    ai.classify(summary, array['high risk loan', 'moderate risk loan', 'low risk loan'], 'openai_small') as loan_risk,
     ai.prompt(
-        'You are a loan underwriter and provide decisions on loans... summary: ',
-        summary,
-        'openai_small') AS decision,
+            'You are a loan underwriter and provide decisions on loans based on applicant information 
+            available.You respond to a loan application ONLY with [Approved], [Rejected], or [More Info Needed], then provide no
+            more than a 25 word explanation in your decision.  You look beyond typical credit risk
+            such as credit score, income, and DTI, and also consider the risk profile of what the loan
+            is intended to be used for.
+
+            Here is the loan application summary: ', summary, 'openai_small') as decision,
     summary AS loan_application
-FROM loan_application_summary
-LIMIT 10;
+FROM loan_application_summary LIMIT 10;
 ```
 
 ---
