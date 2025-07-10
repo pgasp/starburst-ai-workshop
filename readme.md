@@ -1,5 +1,7 @@
 # Travaux Pratiques SQL - Fonctions d’IA avec Starburst
 Lien vers le cluster de l'atelier: https://ai-workshop.enablement.starburstdata.net 
+### Instructions
+-  Pour tous les TP, sélectionnez le catalogue : `starburst`
 
 ## TP1 : Découverte des fonctions d’IA SQL
 
@@ -9,44 +11,60 @@ Explorer les fonctions d’IA disponibles dans votre environnement SQL Starburst
 
 ### Instructions
 
-- Utilisez un rôle : `all_llm` 
+- Utilisez un rôle : `all_llm`
 
 ### Script SQL
 
 ```sql
--- Liste des fonctions d’IA disponibles
+--List of all AI functions
 SHOW FUNCTIONS FROM starburst.ai;
 
--- Liste des modèles de langage configurés
+--List of all configured models
 SELECT * FROM starburst.ai.language_models;
 
--- Liste des modèles d'embedding configurés
+--List of all embedding_models
 SELECT * FROM starburst.ai.embedding_models;
 
--- Génération d’un vecteur d’embedding
-SELECT ai.generate_embedding('Today is a fantastic day', 'openai_small');
+/*
+  Generate vector embedding example
+  Change model name according to configured models
+*/
+SELECT ai.generate_embedding('Today is a fantastic day', 'nomic-embed-text');
 
--- Analyse de sentiment
+/*
+  Sample of AI SQL functions
+  ****Delete the following prior to demo: 
+           Make sure to test output before demo
+           Cloud models may be changing and output is non-deterministic
+           As such, the output may be a little unpredictable
+  ****Delete the section above prior to demo
+*/
+SELECT 
+    ai.analyze_sentiment('Today is a fantastic day', 'openai_small') as user_quote,
+    ai.analyze_sentiment('TSMC customers ordered fewer mobile chips in the first quarter 
+                      than a year earlier, but the companys revenue nevertheless managed to top expectations. ',
+                      'openai_small') as tech_report_summary;
+
 SELECT
-    ai.analyze_sentiment('Today is a fantastic day', 'openai_small') AS user_quote,
-    ai.analyze_sentiment('TSMC customers ordered fewer mobile chips...', 'openai_small') AS tech_report_summary;
+    ai.classify('TSMC customers ordered fewer mobile chips in the first quarter 
+             than a year earlier, but the company’s revenue nevertheless managed to top expectations.', 
+             array['life sciences', 'banking', 'tech', 'energy'], 
+             'openai_small') as report_classification;
 
--- Classification de texte
 SELECT
-    ai.classify('TSMC customers ordered fewer mobile chips...',
-                array['life sciences', 'banking', 'tech', 'energy'],
-                'openai_small') AS report_classification;
+    ai.fix_grammar('That disaster effected so many lives', 'bedrock_claude35') as incorrect_word,
+    ai.fix_grammar('TSMC customers ordered fewer mobile chips in the first quarter 
+                than a year earlier, but the company’s revenue nevertheless managed to top expectations.',
+                'openai_small') as editorially_correct;
 
-
--- Correction grammaticale
-SELECT
-    ai.fix_grammar('That disaster effected so many lives', 'bedrock_claude35') AS incorrect_word,
-    ai.fix_grammar('TSMC customers ordered fewer mobile chips...', 'openai_small') AS editorially_correct;
-
--- Masquage d'information
-SELECT ai.mask('TSMC customers ordered fewer mobile chips... $25.8 billion...',
-               array['financial data', 'dates'],
-               'openai_small') AS masked_summary;
+SELECT ai.mask('TSMC customers ordered fewer mobile chips in the first quarter 
+            than a year earlier, but the companys revenue nevertheless managed to top expectations.
+            
+            TSMC today posted sales of 839.25 billion New Taiwanese dollars, or $25.8 billion, for the 
+            three months ended March 31. Thats up 41.6% from the same time a year earlier. Analysts had 
+            expected slightly slower growth.',
+            array['financial data', 'dates'],
+            'openai_small') as masked_summary;
 ```
 ---
 
@@ -86,31 +104,34 @@ Utiliser un modèle LLM pour évaluer le risque d’un prêt et prendre une déc
 
 ### Instructions
 
-- Modifiez les noms de **catalogue** et **schéma** selon votre environnement
+- Sélectionnez le catalogue : `starburst`
 - Utilisez un rôle  `all_llm`
 ### Script SQL
 
 ```sql
--- Affichage des données de prêt
+--Sample of loan application data
 SELECT * FROM iceberg.workshop.loan_approval;
 
--- Analyse de risque et prise de décision
+--Loan application analysis using LLM
 WITH loan_application_summary AS (
     SELECT
-        text AS loan_reason,
-        concat('income: ', income, ', credit_score: ', credit_score, ', dti_ratio: ', dti_ratio, ', loan request: ', text) AS summary
+            text AS loan_reason,
+            concat('income: ', income, ', credit_score: ', credit_score, ', dti_ratio: ', dti_ratio, ', loan request: ', text) as summary
     FROM iceberg.workshop.loan_approval
 )
 SELECT
     loan_reason,
-    ai.classify(summary, array['high risk loan', 'moderate risk loan', 'low risk loan'], 'openai_small') AS loan_risk,
+    ai.classify(summary, array['high risk loan', 'moderate risk loan', 'low risk loan'], 'openai_small') as loan_risk,
     ai.prompt(
-        'You are a loan underwriter and provide decisions on loans... summary: ',
-        summary,
-        'bedrock_claude35') AS decision,
+            'You are a loan underwriter and provide decisions on loans based on applicant information 
+            available.You respond to a loan application ONLY with [Approved], [Rejected], or [More Info Needed], then provide no
+            more than a 25 word explanation in your decision.  You look beyond typical credit risk
+            such as credit score, income, and DTI, and also consider the risk profile of what the loan
+            is intended to be used for.
+
+            Here is the loan application summary: ', summary, 'openai_small') as decision,
     summary AS loan_application
-FROM loan_application_summary
-LIMIT 10;
+FROM loan_application_summary LIMIT 10;
 ```
 
 ---
