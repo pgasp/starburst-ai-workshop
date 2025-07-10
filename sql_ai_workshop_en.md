@@ -6,7 +6,7 @@
 
 ## General Instructions
 
-For all exercises, select the **catalog: **``
+For all exercises, select the **catalog:**`starburst`
 
 ---
 
