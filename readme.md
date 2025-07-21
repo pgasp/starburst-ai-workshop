@@ -52,7 +52,7 @@ SELECT
              'openai_small') as report_classification;
 
 SELECT
-    ai.fix_grammar('That disaster effected so many lives', 'bedrock_claude35') as incorrect_word,
+    ai.fix_grammar('That disaster effected so many lives', 'openai_small') as incorrect_word,
     ai.fix_grammar('TSMC customers ordered fewer mobile chips in the first quarter 
                 than a year earlier, but the company’s revenue nevertheless managed to top expectations.',
                 'openai_small') as editorially_correct;
